@@ -23,6 +23,25 @@ app.get(`/restaurants/:id`, async (req, res) => {
     const id = req.params.id;
     const foundRestaurent = await Restaurant.findByPk(id);
     res.json(foundRestaurent);
+});
+
+// Code for Express Restaurant Part 3
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+app.post(`/restaurants`, async (req, res, next) => {
+
+    try{
+        const newRestaurant = await Restaurant.create(req.body);
+        if(newRestaurant.name == null){
+            throw new Error(`Resturant not created`)
+        }
+        res.send(newRestaurant)
+    }
+    catch(error){
+        next(error)
+    }
 })
 
 module.exports = app;
