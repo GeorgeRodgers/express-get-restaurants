@@ -43,8 +43,7 @@ app.put(`/restaurants/:id`, async (req, res) => {
 
 app.delete(`/restaurants/:id`, async (req, res) => {
     const foundRestaurant = await Restaurant.findByPk(req.params.id);
-    await Restaurant.destroy({where: {id: req.params.id}});
-    // await foundRestaurant.destroy();
+    await foundRestaurant.destroy();
     res.json(foundRestaurant)
 })
 
