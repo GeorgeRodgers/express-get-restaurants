@@ -1,6 +1,6 @@
-const Restaurant = require("./models/index")
+const Restaurant = require("./models/index");
 const { seedRestaurant } = require("./seedData");
-const db = require("./db/connection")
+const db = require("./db/connection");
 const request = require(`supertest`);
 const app = require(`./src/app`);
 
@@ -39,13 +39,22 @@ describe(`./restaurants/:id GET request`, () => {
 
 describe(`./restaurants/:id POST request`, () => {
     test(`gets the correct response`, async () => {
-            const response = await request(app).post(`/restaurants`).send({"name": "createTestName", "location": "createTestLocation", "cuisine": "createTestCuisine"});;
+            const response = await request(app).post(`/restaurants`).send({"name": "createTestName", "location": "createTestLocation", "cuisine": "createTestCuisine"});
             expect(response.statusCode).toBe(200);
             const responseData = JSON.parse(response.text);
             expect(responseData.id).toEqual(seedRestaurant.length + 1);
             expect(responseData.name).toEqual(`createTestName`);
             expect(responseData.location).toEqual(`createTestLocation`);
             expect(responseData.cuisine).toEqual(`createTestCuisine`);
+    });
+    test(`gets the correct error response`, async () => {
+            const errorResponse = await request(app).post(`/restaurants`).send({"name": "", "location": "", "cuisine": ""});
+            expect(errorResponse.statusCode).toBe(200);
+            const errorResponseData = JSON.parse(errorResponse.text);
+            expect(errorResponseData.errors.length).toBe(3);
+            expect(errorResponseData.errors[0].path).toBe("name");
+            expect(errorResponseData.errors[1].path).toBe("location");
+            expect(errorResponseData.errors[2].path).toBe("cuisine");
     });
 });
 

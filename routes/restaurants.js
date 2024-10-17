@@ -1,5 +1,6 @@
 const { Router } = require(`express`);
 const Restaurant = require("../models/index")
+const { check, validationResult } = require(`express-validator`) // added for Express Resturant Part 5
 
 const restaurantRouter = Router();
 
@@ -14,9 +15,15 @@ restaurantRouter.get(`/:id`, async (req, res) => {
     res.json(foundRestaurant);
 });
 
-restaurantRouter.post(`/`, async (req, res) => {
-    const newRestaurant = await Restaurant.create(req.body);
-    res.json(newRestaurant);
+// Updated for Express Restaurants Part 5
+restaurantRouter.post(`/`, [check("name").not().isEmpty().trim(), check("location").not().isEmpty().trim(), check("cuisine").not().isEmpty().trim()], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.json({errors: errors.array()});
+    } else {
+        const newRestaurant = await Restaurant.create(req.body);
+        res.json(newRestaurant);
+    };
 });
 
 restaurantRouter.put(`/:id`, async (req, res) => {
