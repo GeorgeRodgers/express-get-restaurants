@@ -15,7 +15,7 @@ restaurantRouter.get(`/:id`, async (req, res) => {
     res.json(foundRestaurant);
 });
 
-// Updated for Express Restaurants Part 5
+// Updated for Express Restaurants Part 6
 restaurantRouter.post(`/`, [check("name").not().isEmpty().trim(), check("location").not().isEmpty().trim(), check("cuisine").not().isEmpty().trim()], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

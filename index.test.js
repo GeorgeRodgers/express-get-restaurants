@@ -47,6 +47,7 @@ describe(`./restaurants/:id POST request`, () => {
             expect(responseData.location).toEqual(`createTestLocation`);
             expect(responseData.cuisine).toEqual(`createTestCuisine`);
     });
+    // Updated for Express Restaurants Part 6
     test(`gets the correct error response`, async () => {
             const errorResponse = await request(app).post(`/restaurants`).send({"name": "", "location": "", "cuisine": ""});
             expect(errorResponse.statusCode).toBe(200);
