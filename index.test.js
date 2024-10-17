@@ -1,8 +1,8 @@
 const {Item, Menu, Restaurant} = require("./models/index")
 const { seedItem, seedMenu, seedRestaurant } = require("./seedData");
-const db = require("./db/connection");
+const {db} = require("./db/connection");
 const request = require(`supertest`);
-const app = require(`./src/app`);
+const {app} = require(`./src/app`);
 
 beforeAll( async () => {
     await db.sync({force: true});
@@ -50,14 +50,29 @@ describe(`./restaurants/:id POST request`, () => {
             expect(responseData.cuisine).toEqual(`createTestCuisine`);
     });
     // Updated for Express Restaurants Part 6
-    test(`gets the correct error response`, async () => {
+    test(`gets the correct error response if values for "name", "location" and "cusine" not given`, async () => {
             const errorResponse = await request(app).post(`/restaurants`).send({"name": "", "location": "", "cuisine": ""});
             expect(errorResponse.statusCode).toBe(200);
             const errorResponseData = JSON.parse(errorResponse.text);
-            expect(errorResponseData.errors.length).toBe(3);
+            expect(errorResponseData.errors.length).toBe(4);
             expect(errorResponseData.errors[0].path).toBe("name");
             expect(errorResponseData.errors[1].path).toBe("location");
             expect(errorResponseData.errors[2].path).toBe("cuisine");
+    });
+    // Added for Bonus Express Resturant
+    test(`gets the correct error response if values for "name" is too short`, async () => {
+        const errorResponse = await request(app).post(`/restaurants`).send({"name": "000000000", "location": "createTestName", "cuisine": "createTestName"});
+        expect(errorResponse.statusCode).toBe(200);
+        const errorResponseData = JSON.parse(errorResponse.text);
+        expect(errorResponseData.errors.length).toBe(1);
+        expect(errorResponseData.errors[0].path).toBe("name");
+    });
+    test(`gets the correct error response if values for "name" is too long`, async () => {
+        const errorResponse = await request(app).post(`/restaurants`).send({"name": "0000000000000000000000000000000", "location": "createTestName", "cuisine": "createTestName"});
+        expect(errorResponse.statusCode).toBe(200);
+        const errorResponseData = JSON.parse(errorResponse.text);
+        expect(errorResponseData.errors.length).toBe(1);
+        expect(errorResponseData.errors[0].path).toBe("name");
     });
 });
 
@@ -87,4 +102,6 @@ describe(`./restaurants/:id DELETE request`, () => {
 afterAll( async () => {
     await db.sync({force: true});
     await Restaurant.bulkCreate(seedRestaurant);
+    await Item.bulkCreate(seedItem);
+    await Menu.bulkCreate(seedMenu);
 });
