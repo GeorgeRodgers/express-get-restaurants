@@ -1,5 +1,5 @@
-const Restaurant = require("./models/index");
-const { seedRestaurant } = require("./seedData");
+const {Item, Menu, Restaurant} = require("./models/index")
+const { seedItem, seedMenu, seedRestaurant } = require("./seedData");
 const db = require("./db/connection");
 const request = require(`supertest`);
 const app = require(`./src/app`);
@@ -7,6 +7,8 @@ const app = require(`./src/app`);
 beforeAll( async () => {
     await db.sync({force: true});
     await Restaurant.bulkCreate(seedRestaurant);
+    await Item.bulkCreate(seedItem);
+    await Menu.bulkCreate(seedMenu);
 });
 
 describe(`./restaurants GET request`, () => {

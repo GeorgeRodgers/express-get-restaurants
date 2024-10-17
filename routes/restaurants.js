@@ -1,11 +1,19 @@
 const { Router } = require(`express`);
-const Restaurant = require("../models/index")
+const { Item, Menu, Restaurant } = require("../models/index")
 const { check, validationResult } = require(`express-validator`) // added for Express Resturant Part 5
 
 const restaurantRouter = Router();
 
 restaurantRouter.get(`/`, async (req, res) => {
-    const restaurants = await Restaurant.findAll({}); 
+    const restaurants = await Restaurant.findAll({include: Menu}, { // added for Bonus Express Restaurants check with Haami
+        include: Menu,
+        include: [{
+            model: Menu,
+            include: [{
+                model: Item
+            }]
+        }]
+    }); 
     res.json(restaurants);
 });
 
